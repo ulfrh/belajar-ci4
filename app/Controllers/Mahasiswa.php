@@ -6,15 +6,25 @@ use App\Models\MahasiswaModel;
 
 class Mahasiswa extends BaseController
 {
-    public function index()
-    {
-        $m = new MahasiswaModel();
+ public function index()
+{
+    $m = new MahasiswaModel();
 
-        $data['mahasiswa'] = $m->findAll();
+    $keyword = trim((string) $this->request->getGet('q'));
 
-        return view('mahasiswa/index', $data);
+    if ($keyword !== '') {
+        $m->groupStart()
+            ->like('nim', $keyword)
+            ->orLike('nama', $keyword)
+            ->orLike('alamat', $keyword)
+        ->groupEnd();
     }
 
+    $data['mahasiswa'] = $m->findAll();
+    $data['keyword'] = $keyword;
+
+    return view('mahasiswa/index', $data);
+}
     public function tambah()
     
     {
